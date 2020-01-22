@@ -1,6 +1,6 @@
 {
     "name": "digital-creative/custom-relationship-field",
-    "description": "Emulates hasMany relationship without having a real relationship set between resources",
+    "description": "Emulate HasMany relationship without having a real relationship set between resources",
     "keywords": [
         "laravel",
         "nova",
