@@ -1,9 +1,12 @@
 {
     "name": "digital-creative/custom-relationship-field",
-    "description": "A Laravel Nova field.",
+    "description": "Emulates hasMany relationship without having a real relationship set between resources",
     "keywords": [
         "laravel",
-        "nova"
+        "nova",
+        "relationship",
+        "has-many",
+        "custom"
     ],
     "license": "MIT",
     "require": {
