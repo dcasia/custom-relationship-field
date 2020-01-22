@@ -19,6 +19,10 @@ composer require digital-creative/custom-relationship-field
 Next add the `CustomRelationshipField` to the resource you wanna display the relation.
 
 ```php
+
+use DigitalCreative\CustomRelationshipField\CustomRelationshipField;
+use DigitalCreative\CustomRelationshipField\CustomRelationshipFieldTrait;
+
 class Client extends Resource
 {
     
