@@ -4,6 +4,8 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/digital-creative/custom-relationship-field)](https://packagist.org/packages/digital-creative/custom-relationship-field)
 [![License](https://img.shields.io/packagist/l/digital-creative/custom-relationship-field)](https://github.com/dcasia/custom-relationship-field/blob/master/LICENSE)
 
+![Laravel Nova Custom Relationship Field in action](https://raw.githubusercontent.com/dcasia/custom-relationship-field/master/screenshots/demo.png)
+
 This field works just like as the default HasMany relationship field from nova but **without requiring a real relation** with the resource.
 
 That means you are free to show resource `A` into the details page of resource `B` without they having a real bound though the standard relationship in laravel.
