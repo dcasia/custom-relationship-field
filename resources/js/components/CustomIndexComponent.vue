@@ -5,6 +5,26 @@
     export default {
         extends: IndexComponent,
         props: [ 'customRelationshipFieldAttribute', 'customRelationshipFieldLabel' ],
+        beforeCreate() {
+
+            const interceptor = Nova.request().interceptors.request.use(
+                config => {
+
+                    if (config.method === 'get' && config.url.match(/nova-api\/\S.+\/(filters|actions)/)) {
+
+                        config.params[ 'customRelationshipFieldAttribute' ] = this.customRelationshipFieldAttribute
+                        config.params[ 'customRelationshipFieldLabel' ] = this.customRelationshipFieldLabel
+
+                    }
+
+                    return config
+
+                }
+            )
+
+            this.$on('hook:destroyed', () => Nova.request().interceptors.request.eject(interceptor))
+
+        },
         computed: {
             /**
              * Build the resource request query string.

@@ -53,6 +53,16 @@ class Client extends Resource
     { 
         return $query->where('name', 'SOUNDS LIKE', $model->name)->whereKeyNot($model->getKey());
     }
+    
+    public function similarNameActions(NovaRequest $request) 
+    {
+        return [];
+    }
+
+    public function similarNameFilters(NovaRequest $request)
+    {
+        return [];
+    }
 
 }
 ```
