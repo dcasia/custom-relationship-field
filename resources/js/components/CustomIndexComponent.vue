@@ -9,8 +9,13 @@
 
             const interceptor = Nova.request().interceptors.request.use(
                 config => {
+                    if (/^\/nova-api\/\S.+\/(filters|action)$/.test(config.url)) {
 
-                    if (config.url.match(/nova-api\/\S.+\/filters/)) {
+                        if (config.method === 'post' && config.params.pivotAction === false) {
+
+                            return config
+
+                        }
 
                         config.params[ 'customRelationshipFieldAttribute' ] = this.customRelationshipFieldAttribute
                         config.params[ 'customRelationshipFieldLabel' ] = this.customRelationshipFieldLabel
