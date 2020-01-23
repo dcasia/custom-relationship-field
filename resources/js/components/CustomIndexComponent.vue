@@ -10,7 +10,7 @@
             const interceptor = Nova.request().interceptors.request.use(
                 config => {
 
-                    if (config.url.match(/nova-api\/\S.+\/(filters|actions?)/)) {
+                    if (config.url.match(/nova-api\/\S.+\/filters/)) {
 
                         config.params[ 'customRelationshipFieldAttribute' ] = this.customRelationshipFieldAttribute
                         config.params[ 'customRelationshipFieldLabel' ] = this.customRelationshipFieldLabel
@@ -47,6 +47,35 @@
                     customRelationshipFieldLabel: this.customRelationshipFieldLabel
                 }
             }
+        },
+        methods: {
+
+            /**
+             * Get the actions available for the current resource.
+             */
+            getActions() {
+
+                this.actions = []
+                this.pivotActions = null
+
+                return Nova.request()
+                    .get(`/nova-api/${ this.resourceName }/actions`, {
+                        params: {
+                            viaResource: this.viaResource,
+                            viaResourceId: this.viaResourceId,
+                            viaRelationship: this.viaRelationship,
+                            relationshipType: this.relationshipType,
+                            customRelationshipFieldAttribute: this.customRelationshipFieldAttribute,
+                            customRelationshipFieldLabel: this.customRelationshipFieldLabel
+                        }
+                    })
+                    .then(response => {
+                        this.actions = _.filter(response.data.actions, a => a.showOnIndex)
+                        this.pivotActions = response.data.pivotActions
+                    })
+
+            }
+
         }
     }
 
