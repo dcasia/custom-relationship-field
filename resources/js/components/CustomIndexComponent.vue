@@ -9,9 +9,10 @@
 
             const interceptor = Nova.request().interceptors.request.use(
                 config => {
+
                     if (/^\/nova-api\/\S.+\/(filters|action)$/.test(config.url)) {
 
-                        if (config.method === 'post' && config.params.pivotAction === false) {
+                        if (config.method === 'post' && config.params.viaResourceId === '') {
 
                             return config
 
