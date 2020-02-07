@@ -73,6 +73,31 @@ trait CustomRelationshipFieldTrait
     }
 
     /**
+     * Get the cards for the given request.
+     *
+     * @param  NovaRequest $request
+     *
+     * @return Collection
+     */
+    public function resolveCards(NovaRequest $request)
+    {
+        
+        if ($method = $request->input('customRelationshipFieldAttribute')) {
+
+            $method = "{$method}Cards";
+
+            if (method_exists($this, $method)) {
+
+                return collect(array_values($this->filter($this->$method($request))));
+
+            }
+
+        }
+
+        return parent::resolveCards($request);
+    }
+
+    /**
      * Get the filters for the given request.
      *
      * @param NovaRequest $request
