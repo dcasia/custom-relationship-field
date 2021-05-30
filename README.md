@@ -18,7 +18,11 @@ You can install the package via composer:
 composer require digital-creative/custom-relationship-field
 ```
 
-Next add the `CustomRelationshipField` to the resource you wanna display the relation.
+1. Add the `CustomRelationshipFieldTrait` to the resource (`A`) that will be related to, and implement the required: (instance) `relationFields`, (static) `relationQuery` methods and optional: `relationActions`, `relationFilters` instance methods on it, where `relation` is the name you choose for your custom relation.
+2. Next, add the `CustomRelationshipField` to any resources (`B`) that you want the custom relation to be listed on the details page of.  
+Example: `CustomRelationshipField::make('Relation Label', 'relation', RelatedResourceA::class)` where `relation` is the name you choose for your custom relation. Make sure you use the same relation name passed to the field to name the methods you implemented on the related resource in the first step. `RelatedResourceA` is the Nova resource class you are relating to which has the `CustomRelationshipFieldTrait`.
+
+In the example below, the related resource is the same one that is being related to.
 
 ```php
 
@@ -66,6 +70,8 @@ class Client extends Resource
 
 }
 ```
+
+
 
 ## License
 
