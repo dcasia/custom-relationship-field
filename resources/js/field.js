@@ -1,5 +1,6 @@
 import CustomRelationshipField from './components/CustomRelationshipField'
 
-Nova.booting((Vue, router, store) => {
-    Vue.component('detail-custom-relationship-field', CustomRelationshipField)
+// eslint-disable-next-line no-unused-vars
+Nova.booting((app, store) => {
+  app.component('DetailCustomRelationshipField', CustomRelationshipField)
 })

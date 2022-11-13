@@ -1,34 +1,52 @@
 <template>
-
-    <IndexComponent :field="field"
-                    :resource-name="field.resourceName"
-                    :via-resource="resourceName"
-                    :via-resource-id="resourceId"
-                    :via-relationship="null"
-                    :relationship-type="'has-many'"
-                    @actionExecuted="actionExecuted"
-                    :load-cards="false"
-                    :initialPerPage="field.perPage || 5"
-                    :custom-relationship-field-attribute="field.attribute"
-                    :custom-relationship-field-label="field.name"/>
-
+    <IndexComponent
+        :field="field"
+        :resource-name="field.resourceName"
+        :via-resource="resourceName"
+        :via-resource-id="resourceId"
+        :via-relationship="null"
+        :relationship-type="'has-many'"
+        :load-cards="false"
+        :initial-per-page="field.perPage || 5"
+        :custom-relationship-field-attribute="field.attribute"
+        :custom-relationship-field-label="field.name"
+        @action-executed="actionExecuted"
+    />
 </template>
 
 <script>
 
-    import IndexComponent from './CustomIndexComponent'
+import IndexComponent from './CustomIndexComponent'
 
-    export default {
-        props: [ 'resourceName', 'resourceId', 'resource', 'field' ],
-        components: { IndexComponent },
-        methods: {
-            /**
-             * Handle the actionExecuted event and pass it up the chain.
-             */
-            actionExecuted() {
-                this.$emit('actionExecuted')
-            }
-        }
+export default {
+  components: { IndexComponent },
+  props: {
+    field: {
+      type: Object,
+      required: true
+    },
+    resource: {
+      type: Object,
+      required: true
+    },
+    resourceName: {
+      type: String,
+      required: true
+    },
+    resourceId: {
+      type: String,
+      required: true
     }
+  },
+  emits: {'actionExecuted': null},
+  methods: {
+    /**
+     * Handle the actionExecuted event and pass it up the chain.
+     */
+    actionExecuted() {
+      this.$emit('actionExecuted')
+    }
+  }
+}
 
 </script>

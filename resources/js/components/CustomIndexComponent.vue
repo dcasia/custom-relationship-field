@@ -1,10 +1,42 @@
 <script>
 
-    import IndexComponent from '~~nova~~/views/Index.vue'
+    import IndexComponent from '@/pages/Index.vue'
 
     export default {
         extends: IndexComponent,
-        props: [ 'customRelationshipFieldAttribute', 'customRelationshipFieldLabel' ],
+      props: {
+        customRelationshipFieldAttribute: {
+          type: String,
+          required: true
+        },
+        customRelationshipFieldLabel: {
+          type: String,
+          required: true
+        }
+      },
+        computed: {
+            /**
+             * Build the resource request query string.
+             */
+            resourceRequestQueryString() {
+                return {
+                    search: this.currentSearch,
+                    filters: this.encodedFilters,
+                    orderBy: this.currentOrderBy,
+                    orderByDirection: this.currentOrderByDirection,
+                    perPage: this.currentPerPage,
+                    trashed: this.currentTrashed,
+                    page: this.currentPage,
+                    viaResource: this.viaResource,
+                    viaResourceId: this.viaResourceId,
+                    viaRelationship: this.viaRelationship,
+                    viaResourceRelationship: this.viaResourceRelationship,
+                    relationshipType: this.relationshipType,
+                    customRelationshipFieldAttribute: this.customRelationshipFieldAttribute,
+                    customRelationshipFieldLabel: this.customRelationshipFieldLabel
+                }
+            }
+        },
         beforeCreate() {
 
             const interceptor = Nova.request().interceptors.request.use(
@@ -28,31 +60,8 @@
                 }
             )
 
-            this.$on('hook:destroyed', () => Nova.request().interceptors.request.eject(interceptor))
+            Nova.$on('hook:destroyed', () => Nova.request().interceptors.request.eject(interceptor))
 
-        },
-        computed: {
-            /**
-             * Build the resource request query string.
-             */
-            resourceRequestQueryString() {
-                return {
-                    search: this.currentSearch,
-                    filters: this.encodedFilters,
-                    orderBy: this.currentOrderBy,
-                    orderByDirection: this.currentOrderByDirection,
-                    perPage: this.currentPerPage,
-                    trashed: this.currentTrashed,
-                    page: this.currentPage,
-                    viaResource: this.viaResource,
-                    viaResourceId: this.viaResourceId,
-                    viaRelationship: this.viaRelationship,
-                    viaResourceRelationship: this.viaResourceRelationship,
-                    relationshipType: this.relationshipType,
-                    customRelationshipFieldAttribute: this.customRelationshipFieldAttribute,
-                    customRelationshipFieldLabel: this.customRelationshipFieldLabel
-                }
-            }
         },
         methods: {
 

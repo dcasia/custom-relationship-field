@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DigitalCreative\CustomRelationshipField;
 
 use Laravel\Nova\Fields\HasMany;

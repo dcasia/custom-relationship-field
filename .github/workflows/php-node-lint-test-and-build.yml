@@ -1,0 +1,67 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js and PHP Composer Lint Test and Build CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Validate composer.json and composer.lock 💥
+        run: composer validate --strict
+
+      - name: Lint (Laravel Pint) -> https://laravel.com/docs 🚀
+        run: composer install:tools && composer lint:check
+
+      - name: Cache Composer packages 📦
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+            path: vendor
+            key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+            restore-keys: |
+                ${{ runner.os }}-php-
+
+      - name: Composer Install 🖥️
+        run: |
+            composer config "http-basic.nova.laravel.com" "${{ secrets.NOVA_USERNAME }}" "${{ secrets.NOVA_FOUR_PASSWORD }}"
+            composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+      # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+      # - name: Run test suite
+      #   run: composer run-script test
+
+      - name: Setup Node.js 🖥️
+        uses: actions/setup-node@v3
+        with:
+            node-version-file: '.nvmrc'
+            cache: 'yarn'
+
+      - name: Install dependencies 📦
+        run: yarn install
+
+#      - name: Check code with prettier 🐛
+#        run: yarn format-check
+
+      - name: Check code with eslint 🚨
+        uses: reviewdog/action-eslint@v1
+        with:
+            fail_on_error: true
+
+      - name: Install Nova Dependencies 📦
+        run: yarn nova:install
+
+      - name: Build for production 🏗️
+        run: yarn prod

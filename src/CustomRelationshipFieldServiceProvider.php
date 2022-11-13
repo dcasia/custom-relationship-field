@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DigitalCreative\CustomRelationshipField;
 
 use Illuminate\Support\ServiceProvider;
@@ -16,7 +18,7 @@ class CustomRelationshipFieldServiceProvider extends ServiceProvider
     public function boot()
     {
         Nova::serving(static function (ServingNova $event) {
-            Nova::script('custom-relationship-field', __DIR__ . '/../dist/js/field.js');
+            Nova::script('custom-relationship-field', __DIR__.'/../dist/js/field.js');
         });
     }
 }

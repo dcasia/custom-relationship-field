@@ -1,0 +1,23 @@
+{
+    "extends": [
+        "eslint:recommended",
+        "plugin:vue/vue3-recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 2022
+    },
+    "globals": {
+        "Nova": true,
+        "_": true
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "es6": true
+    },
+    "rules": {
+        "vue/html-indent": ["error", 4],
+        "vue/multi-word-component-names": "off",
+        "semi": ["error", "never"]
+    }
+}
