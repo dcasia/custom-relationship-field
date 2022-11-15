@@ -9,8 +9,17 @@
         "custom"
     ],
     "license": "MIT",
+    "homepage": "https://github.com/dcasia/custom-relationship-field",
+    "authors": [
+        {
+            "name": "Christian Widlund",
+            "email": "christian.widlund@gmail.com",
+            "role": "Contributer"
+        }
+    ],
     "require": {
-        "php": ">=7.1.0"
+        "php": ">=8.0",
+        "laravel/nova": "^4.0"
     },
     "autoload": {
         "psr-4": {

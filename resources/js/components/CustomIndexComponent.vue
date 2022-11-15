@@ -1,88 +1,88 @@
 <script>
 
-    import IndexComponent from '~~nova~~/views/Index.vue'
+    import IndexComponent from '@/pages/Index.vue'
+    import { defineComponent } from 'vue'
 
-    export default {
-        extends: IndexComponent,
-        props: [ 'customRelationshipFieldAttribute', 'customRelationshipFieldLabel' ],
-        beforeCreate() {
+    const novaRequest = Nova.request
 
-            const interceptor = Nova.request().interceptors.request.use(
-                config => {
+    const interceptors = []
+    const interceptorsInstance = []
 
-                    if (/^\/nova-api\/\S.+\/(filters|action)$/.test(config.url)) {
+    Nova.request = (...params) => {
 
-                        if (config.method === 'post' && config.params.viaResourceId === '') {
+        for (const param of params) {
 
-                            return config
-
-                        }
-
-                        config.params[ 'customRelationshipFieldAttribute' ] = this.customRelationshipFieldAttribute
-                        config.params[ 'customRelationshipFieldLabel' ] = this.customRelationshipFieldLabel
-
-                    }
-
-                    return config
-
-                }
-            )
-
-            this.$on('hook:destroyed', () => Nova.request().interceptors.request.eject(interceptor))
-
-        },
-        computed: {
-            /**
-             * Build the resource request query string.
-             */
-            resourceRequestQueryString() {
-                return {
-                    search: this.currentSearch,
-                    filters: this.encodedFilters,
-                    orderBy: this.currentOrderBy,
-                    orderByDirection: this.currentOrderByDirection,
-                    perPage: this.currentPerPage,
-                    trashed: this.currentTrashed,
-                    page: this.currentPage,
-                    viaResource: this.viaResource,
-                    viaResourceId: this.viaResourceId,
-                    viaRelationship: this.viaRelationship,
-                    viaResourceRelationship: this.viaResourceRelationship,
-                    relationshipType: this.relationshipType,
-                    customRelationshipFieldAttribute: this.customRelationshipFieldAttribute,
-                    customRelationshipFieldLabel: this.customRelationshipFieldLabel
-                }
-            }
-        },
-        methods: {
-
-            /**
-             * Get the actions available for the current resource.
-             */
-            getActions() {
-
-                this.actions = []
-                this.pivotActions = null
-
-                return Nova.request()
-                    .get(`/nova-api/${ this.resourceName }/actions`, {
-                        params: {
-                            viaResource: this.viaResource,
-                            viaResourceId: this.viaResourceId,
-                            viaRelationship: this.viaRelationship,
-                            relationshipType: this.relationshipType,
-                            customRelationshipFieldAttribute: this.customRelationshipFieldAttribute,
-                            customRelationshipFieldLabel: this.customRelationshipFieldLabel
-                        }
-                    })
-                    .then(response => {
-                        this.actions = _.filter(response.data.actions, a => a.showOnIndex)
-                        this.pivotActions = response.data.pivotActions
-                    })
-
+            for (const interceptor of interceptors) {
+                interceptor(param)
             }
 
         }
+
+        const axiosInstance = novaRequest(...params)
+
+        if (axiosInstance instanceof Promise) {
+            return axiosInstance
+        }
+
+        for (const interceptor of interceptors) {
+
+            interceptorsInstance.push({
+                instance: axiosInstance,
+                interceptor: axiosInstance.interceptors.request.use(config => interceptor(config)),
+            })
+
+        }
+
+        return axiosInstance
+
     }
+
+    export default defineComponent({
+        extends: IndexComponent,
+        props: {
+            customRelationshipFieldAttribute: {
+                type: String,
+                required: true,
+            },
+            customRelationshipFieldLabel: {
+                type: String,
+                required: true,
+            },
+        },
+        beforeCreate() {
+
+            interceptors.push(config => {
+
+                if (config.params === undefined) {
+                    config.params = {}
+                }
+
+                const regex = new RegExp(`^\/nova-api\/(${ this.resourceName })\/?(filters|actions|relate-authorization)?`)
+
+                if (regex.test(config.url)) {
+
+                    config.params[ 'customRelationshipFieldAttribute' ] = this.customRelationshipFieldAttribute
+                    config.params[ 'customRelationshipFieldLabel' ] = this.customRelationshipFieldLabel
+
+                }
+
+                return config
+
+            })
+
+        },
+        beforeUnmount() {
+
+            for (const { instance, interceptor } of interceptorsInstance) {
+                instance.interceptors.request.eject(interceptor)
+            }
+
+            while (interceptorsInstance.length) {
+                interceptorsInstance.pop()
+                interceptors.pop()
+            }
+
+        },
+    })
 
 </script>
