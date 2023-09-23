@@ -1,18 +1,13 @@
 {
     "private": true,
     "scripts": {
-        "dev": "npm run development",
-        "development": "mix",
         "watch": "mix watch",
-        "watch-poll": "mix watch -- --watch-options-poll=1000",
-        "hot": "mix watch --hot",
-        "prod": "npm run production",
         "production": "mix --production",
         "nova:install": "npm --prefix='../vendor/laravel/nova' ci"
     },
     "devDependencies": {
-        "@vue/compiler-sfc": "^3.2.22",
+        "@vue/compiler-sfc": "^3.3.4",
         "laravel-mix": "^6.0.49",
-        "vue-loader": "^16.8.3"
+        "vue-loader": "^17.2.2"
     }
 }
