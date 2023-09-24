@@ -27,7 +27,7 @@ trait CustomRelationshipFieldTrait
     {
         $prefix = 'fields';
 
-        if ($attribute = $request->input('customRelationshipFieldAttribute')) {
+        if ($attribute = $this->extractAttributeFromRequest($request)) {
             $prefix = "{$attribute}Fields";
         }
 
@@ -56,7 +56,7 @@ trait CustomRelationshipFieldTrait
 
     public function buildAvailableFields(NovaRequest $request, array $methods): FieldCollection
     {
-        if ($attribute = $request->input('customRelationshipFieldAttribute')) {
+        if ($attribute = $this->extractAttributeFromRequest($request)) {
 
             $method = "{$attribute}Fields";
 
@@ -80,7 +80,7 @@ trait CustomRelationshipFieldTrait
 
     public function resolveActions(NovaRequest $request): Collection
     {
-        if ($method = $request->input('customRelationshipFieldAttribute')) {
+        if ($method = $this->extractAttributeFromRequest($request)) {
 
             $method = "{$method}Actions";
 
@@ -99,7 +99,7 @@ trait CustomRelationshipFieldTrait
 
     public function resolveCards(NovaRequest $request): Collection
     {
-        if ($method = $request->input('customRelationshipFieldAttribute')) {
+        if ($method = $this->extractAttributeFromRequest($request)) {
 
             $method = "{$method}Cards";
 
@@ -114,7 +114,7 @@ trait CustomRelationshipFieldTrait
 
     public function resolveFilters(NovaRequest $request): Collection
     {
-        if ($method = $request->input('customRelationshipFieldAttribute')) {
+        if ($method = $this->extractAttributeFromRequest($request)) {
 
             $method = "{$method}Filters";
 
@@ -136,7 +136,7 @@ trait CustomRelationshipFieldTrait
         $withTrashed = TrashedStatus::DEFAULT,
     ): Builder
     {
-        if ($method = $request->input('customRelationshipFieldAttribute')) {
+        if ($method = static::extractAttributeFromRequest($request)) {
 
             $method = "{$method}Query";
 
@@ -159,5 +159,10 @@ trait CustomRelationshipFieldTrait
         }
 
         return parent::buildIndexQuery(...func_get_args());
+    }
+
+    private static function extractAttributeFromRequest(NovaRequest $request): ?string
+    {
+        return $request->input('customRelationshipFieldAttribute');
     }
 }

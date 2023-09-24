@@ -57,12 +57,18 @@
                     config.params = {}
                 }
 
-                const regex = new RegExp(`^\/nova-api\/(${ this.resourceName })\/?(filters|actions|relate-authorization)?`)
+                if (config.params.viaRelationship?.startsWith(`CustomRelationshipField:${ this.customRelationshipFieldAttribute }`)) {
 
-                if (regex.test(config.url)) {
+                    delete config.params.viaRelationship
 
-                    config.params[ 'customRelationshipFieldAttribute' ] = this.customRelationshipFieldAttribute
-                    config.params[ 'customRelationshipFieldLabel' ] = this.customRelationshipFieldLabel
+                    const regex = new RegExp(`^\/nova-api\/(${ this.resourceName })\/?(filters|actions|relate-authorization)?`)
+
+                    if (regex.test(config.url)) {
+
+                        config.params[ 'customRelationshipFieldAttribute' ] = this.customRelationshipFieldAttribute
+                        config.params[ 'customRelationshipFieldLabel' ] = this.customRelationshipFieldLabel
+
+                    }
 
                 }
 
