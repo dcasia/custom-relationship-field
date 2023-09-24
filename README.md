@@ -17,7 +17,7 @@ That means you are free to show resource `A` into the details page of resource `
 
 You can install the package via composer:
 
-```
+```shell
 composer require digital-creative/custom-relationship-field
 ```
 
