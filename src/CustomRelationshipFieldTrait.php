@@ -7,11 +7,14 @@ namespace DigitalCreative\CustomRelationshipField;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\ActionCollection;
-use Laravel\Nova\Fields\FieldCollection;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Nova;
+use Laravel\Nova\Resource;
 use Laravel\Nova\TrashedStatus;
 
+/**
+ * @mixin Resource
+ */
 trait CustomRelationshipFieldTrait
 {
     public static function label(): string
@@ -19,28 +22,35 @@ trait CustomRelationshipFieldTrait
         return resolve(NovaRequest::class)->input('customRelationshipFieldLabel') ?? parent::label();
     }
 
-    public function buildAvailableFields(NovaRequest $request, array $methods): FieldCollection
+    protected function fieldsMethod(NovaRequest $request): string
     {
-        $method = 'fields';
+        $prefix = 'fields';
 
         if ($attribute = $request->input('customRelationshipFieldAttribute')) {
-            $method = "{$attribute}Fields";
-            $methods = [ $method ];
+            $prefix = "{$attribute}Fields";
         }
 
-        $fields = collect([
-            method_exists($this, $method) ? $this->$method($request) : [],
-        ]);
+        if ($request->isInlineCreateRequest() && method_exists($this, "{$prefix}ForInlineCreate")) {
+            return "{$prefix}ForInlineCreate";
+        }
 
-        collect($methods)
-            ->filter(function (string $method) {
-                return $method != 'fields' && method_exists($this, $method);
-            })
-            ->each(function (string $method) use ($request, $fields) {
-                $fields->push([ $this->{$method}($request) ]);
-            });
+        if ($request->isResourceIndexRequest() && method_exists($this, "{$prefix}ForIndex")) {
+            return "{$prefix}ForIndex";
+        }
 
-        return FieldCollection::make(array_values($this->filter($fields->flatten()->all())));
+        if ($request->isResourceDetailRequest() && method_exists($this, "{$prefix}ForDetail")) {
+            return "{$prefix}ForDetail";
+        }
+
+        if ($request->isCreateOrAttachRequest() && method_exists($this, "{$prefix}ForCreate")) {
+            return "{$prefix}ForCreate";
+        }
+
+        if ($request->isUpdateOrUpdateAttachedRequest() && method_exists($this, "{$prefix}ForUpdate")) {
+            return "{$prefix}ForUpdate";
+        }
+
+        return $prefix;
     }
 
     public function resolveActions(NovaRequest $request): Collection
@@ -52,7 +62,7 @@ trait CustomRelationshipFieldTrait
             if (method_exists($this, $method)) {
 
                 return ActionCollection::make(
-                    $this->filter($this->$method($request))
+                    $this->filter($this->{$method}($request)),
                 );
 
             }
@@ -69,7 +79,7 @@ trait CustomRelationshipFieldTrait
             $method = "{$method}Cards";
 
             if (method_exists($this, $method)) {
-                return collect(array_values($this->filter($this->$method($request))));
+                return collect(array_values($this->filter($this->{$method}($request))));
             }
 
         }
@@ -84,7 +94,7 @@ trait CustomRelationshipFieldTrait
             $method = "{$method}Filters";
 
             if (method_exists($this, $method)) {
-                return collect(array_values($this->filter($this->$method($request))));
+                return collect(array_values($this->filter($this->{$method}($request))));
             }
 
         }
@@ -92,18 +102,14 @@ trait CustomRelationshipFieldTrait
         return parent::resolveFilters($request);
     }
 
-    /**
-     * Build an "index" query for the given resource.
-     *
-     * @param NovaRequest $request
-     * @param Builder $query
-     * @param string $search
-     * @param array $filters
-     * @param array $orderings
-     * @param string $withTrashed
-     * @return Builder
-     */
-    public static function buildIndexQuery(NovaRequest $request, $query, $search = null, array $filters = [], array $orderings = [], $withTrashed = TrashedStatus::DEFAULT)
+    public static function buildIndexQuery(
+        NovaRequest $request,
+        $query,
+        $search = null,
+        array $filters = [],
+        array $orderings = [],
+        $withTrashed = TrashedStatus::DEFAULT,
+    ): Builder
     {
         if ($method = $request->input('customRelationshipFieldAttribute')) {
 
@@ -112,8 +118,8 @@ trait CustomRelationshipFieldTrait
             if (method_exists(static::class, $method)) {
 
                 return static::applyOrderings(static::applyFilters(
-                    $request, static::initializeQuery($request, $query, $search, $withTrashed), $filters
-                ), $orderings)->tap(static function ($query) use ($method, $request) {
+                    $request, static::initializeQuery($request, $query, $search, $withTrashed), $filters,
+                ), $orderings)->tap(function ($query) use ($method, $request): void {
 
                     $resource = Nova::modelInstanceForKey($request->viaResource)
                         ->newQueryWithoutScopes()

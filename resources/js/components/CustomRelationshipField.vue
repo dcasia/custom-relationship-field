@@ -21,22 +21,11 @@
 
     import IndexComponent from './CustomIndexComponent'
 
-    import { mapProps } from '@/mixins'
-
     export default {
         components: { IndexComponent },
         emits: [ 'actionExecuted' ],
-
-        props: {
-            ...mapProps([ 'resourceId', 'field' ]),
-            resourceName: {},
-            resource: {},
-        },
-
+        props: [ 'resourceName', 'resourceId', 'resource', 'field' ],
         methods: {
-            /**
-             * Handle the actionExecuted event and pass it up the chain.
-             */
             actionExecuted() {
                 this.$emit('actionExecuted')
             },

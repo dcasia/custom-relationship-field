@@ -4,6 +4,7 @@
     "keywords": [
         "laravel",
         "nova",
+        "nova4",
         "relationship",
         "has-many",
         "custom"
@@ -12,9 +13,7 @@
     "homepage": "https://github.com/dcasia/custom-relationship-field",
     "authors": [
         {
-            "name": "Christian Widlund",
-            "email": "christian.widlund@gmail.com",
-            "role": "Contributer"
+            "name": "Rafael Milewski"
         }
     ],
     "require": {

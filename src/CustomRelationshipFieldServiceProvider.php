@@ -12,7 +12,7 @@ class CustomRelationshipFieldServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        Nova::serving(static function (ServingNova $event) {
+        Nova::serving(static function (ServingNova $event): void {
             Nova::script('custom-relationship-field', __DIR__ . '/../dist/js/field.js');
         });
     }

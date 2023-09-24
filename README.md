@@ -4,74 +4,69 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/digital-creative/custom-relationship-field)](https://packagist.org/packages/digital-creative/custom-relationship-field)
 [![License](https://img.shields.io/packagist/l/digital-creative/custom-relationship-field)](https://github.com/dcasia/custom-relationship-field/blob/master/LICENSE)
 
-![Laravel Nova Custom Relationship Field in action](https://raw.githubusercontent.com/dcasia/custom-relationship-field/master/screenshots/demo.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/dcasia/custom-relationship-field/main/screenshots/dark.png">
+  <img alt="Laravel Nova Filepond in action" src="https://raw.githubusercontent.com/dcasia/custom-relationship-field/main/screenshots/light.png">
+</picture>
 
 This field works just like as the default HasMany relationship field from nova but **without requiring a real relation** with the resource.
 
-That means you are free to show resource `A` into the details page of resource `B` without they having a real bound though the standard relationship in laravel.
+That means you are free to show resource `A` into the details page of resource `B` without having to create a real relation between them.
 
 # Installation
 
 You can install the package via composer:
 
-```
+```shell
 composer require digital-creative/custom-relationship-field
 ```
 
-1. Add the `CustomRelationshipFieldTrait` to the resource (`A`) that will be related to, and implement the required: (instance) `relationFields`, (static) `relationQuery` methods and optional: `relationActions`, `relationFilters` instance methods on it, where `relation` is the name you choose for your custom relation.
-2. Next, add the `CustomRelationshipField` to any resources (`B`) that you want the custom relation to be listed on the details page of.  
-Example: `CustomRelationshipField::make('Relation Label', 'relation', RelatedResourceA::class)` where `relation` is the name you choose for your custom relation. Make sure you use the same relation name passed to the field to name the methods you implemented on the related resource in the first step. `RelatedResourceA` is the Nova resource class you are relating to which has the `CustomRelationshipFieldTrait`.
-
-In the example below, the related resource is the same one that is being related to.
-
 ```php
-
 use DigitalCreative\CustomRelationshipField\CustomRelationshipField;
 use DigitalCreative\CustomRelationshipField\CustomRelationshipFieldTrait;
 
-class Client extends Resource
-{
-    
-    use CustomRelationshipFieldTrait;
-   
-    public function fields()
-    {
-        return [
-            Text::make('Name')->rules('required'),
-            // ...
-            CustomRelationshipField::make('Clients with similar name', 'similarName', self::class),
-        ];
-    }
-
-    public function similarNameFields(): array
-    {
-        return [
-            ID::make()->sortable(),
-            Text::make('Name'),
-            Text::make('Age'),
-            //...
-        ];
-    }
-
-    public static function similarNameQuery(NovaRequest $request, $query, Model $model)
+trait UserWithSimilarNameTrait
+{    
+    public static function similarNameQuery(NovaRequest $request, Builder $query, User $model): Builder
     { 
-        return $query->where('name', 'SOUNDS LIKE', $model->name)->whereKeyNot($model->getKey());
+        return $query->where('last_name', $model->last_name)->whereKeyNot($model->getKey());
     }
     
-    public function similarNameActions(NovaRequest $request) 
+    public function similarNameFields(NovaRequest $request): array
+    {
+        return [
+            ID::make(),
+            Text::make('First Name'),
+            Text::make('Last Name'),
+        ];
+    }
+    
+    public function similarNameActions(NovaRequest $request): array 
     {
         return [];
     }
 
-    public function similarNameFilters(NovaRequest $request)
+    public function similarNameFilters(NovaRequest $request): array
     {
         return [];
     }
+}
 
+class User extends Resource
+{    
+    use CustomRelationshipFieldTrait;
+    use UserWithSimilarNameTrait;
+    
+    public function fields(NovaRequest $request): array
+    {
+        return [
+            ...
+            CustomRelationshipField::make('Users with similar name', 'similarName', User::class),
+            ...
+        ];
+    }
 }
 ```
-
-
 
 ## License
 
