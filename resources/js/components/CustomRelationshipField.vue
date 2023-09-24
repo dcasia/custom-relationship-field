@@ -5,7 +5,7 @@
         :resource-name="field.resourceName"
         :via-resource="resourceName"
         :via-resource-id="resourceId"
-        :via-relationship="null"
+        :via-relationship="`CustomRelationshipField:${ field.attribute }`"
         :relationship-type="'hasMany'"
         @actionExecuted="actionExecuted"
         :load-cards="false"
