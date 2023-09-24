@@ -7,6 +7,7 @@ namespace DigitalCreative\CustomRelationshipField;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\ActionCollection;
+use Laravel\Nova\Fields\FieldCollection;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Resource;
@@ -51,6 +52,30 @@ trait CustomRelationshipFieldTrait
         }
 
         return $prefix;
+    }
+
+    public function buildAvailableFields(NovaRequest $request, array $methods): FieldCollection
+    {
+        if ($attribute = $request->input('customRelationshipFieldAttribute')) {
+
+            $method = "{$attribute}Fields";
+
+            $fields = collect([
+                method_exists($this, $method) ? $this->{$method}($request) : [],
+            ]);
+
+            collect($methods)
+                ->map(fn (string $method) => $attribute . ucfirst($method))
+                ->filter(fn (string $method) => $method !== "{$attribute}Fields" && method_exists($this, $method))
+                ->each(function (string $method) use ($request, $fields): void {
+                    $fields->push([ $this->{$method}($request) ]);
+                });
+
+            return FieldCollection::make(array_values($this->filter($fields->flatten()->all())));
+
+        }
+
+        return parent::buildAvailableFields($request, $methods);
     }
 
     public function resolveActions(NovaRequest $request): Collection
