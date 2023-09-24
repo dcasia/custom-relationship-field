@@ -13,14 +13,7 @@
     "homepage": "https://github.com/dcasia/custom-relationship-field",
     "authors": [
         {
-            "name": "Rafael Milewski",
-            "email": "rafael.milewski@gmail.com",
-            "role": "Developer"
-        },
-        {
-            "name": "Christian Widlund",
-            "email": "christian.widlund@gmail.com",
-            "role": "Contributer"
+            "name": "Rafael Milewski"
         }
     ],
     "require": {
