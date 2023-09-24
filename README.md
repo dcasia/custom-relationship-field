@@ -41,12 +41,12 @@ trait UserWithSimilarNameTrait
         ];
     }
     
-    public function similarNameActions(NovaRequest $request) 
+    public function similarNameActions(NovaRequest $request): array 
     {
         return [];
     }
 
-    public function similarNameFilters(NovaRequest $request)
+    public function similarNameFilters(NovaRequest $request): array
     {
         return [];
     }
