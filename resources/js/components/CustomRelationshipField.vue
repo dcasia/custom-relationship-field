@@ -1,15 +1,15 @@
 <template>
 
-    <IndexComponent
+    <ResourceIndex
         :field="field"
         :resource-name="field.resourceName"
         :via-resource="resourceName"
         :via-resource-id="resourceId"
-        :via-relationship="`CustomRelationshipField:${ field.attribute }`"
-        :relationship-type="'hasMany'"
+        :via-relationship="null"
+        :relationship-type="`CustomRelationshipField:${ encodedAttribute }`"
         @actionExecuted="actionExecuted"
         :load-cards="false"
-        :initialPerPage="field.perPage || 5"
+        :initial-per-page="field.perPage || 5"
         :should-override-meta="false"
         :custom-relationship-field-attribute="field.attribute"
         :custom-relationship-field-label="field.name"
@@ -19,10 +19,7 @@
 
 <script>
 
-    import IndexComponent from './CustomIndexComponent'
-
     export default {
-        components: { IndexComponent },
         emits: [ 'actionExecuted' ],
         props: [ 'resourceName', 'resourceId', 'resource', 'field' ],
         methods: {
@@ -30,6 +27,11 @@
                 this.$emit('actionExecuted')
             },
         },
+        computed: {
+            encodedAttribute() {
+                return btoa(`${ this.field.attribute }|_::_|${ this.field.name }`)
+            },
+        }
     }
 
 </script>
