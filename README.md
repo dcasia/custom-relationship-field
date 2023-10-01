@@ -6,7 +6,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/dcasia/custom-relationship-field/main/screenshots/dark.png">
-  <img alt="Laravel Nova Filepond in action" src="https://raw.githubusercontent.com/dcasia/custom-relationship-field/main/screenshots/light.png">
+  <img alt="Custom Relationship Field in action" src="https://raw.githubusercontent.com/dcasia/custom-relationship-field/main/screenshots/light.png">
 </picture>
 
 This field works just like as the default HasMany relationship field from nova but **without requiring a real relation** with the resource.
