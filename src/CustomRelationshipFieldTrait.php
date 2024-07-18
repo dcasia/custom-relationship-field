@@ -12,6 +12,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Resource;
 use Laravel\Nova\TrashedStatus;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @mixin Resource
@@ -134,7 +135,7 @@ trait CustomRelationshipFieldTrait
         array $filters = [],
         array $orderings = [],
         $withTrashed = TrashedStatus::DEFAULT,
-    ): Builder
+    ): Builder|BelongsToMany
     {
         if ($method = static::extractAttributeFromRequest($request)) {
 
